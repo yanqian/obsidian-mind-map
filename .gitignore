@@ -1,7 +1,6 @@
 *.DS_Store
 # npm
 node_modules
-package-lock.json
 
 # build
 main.js
@@ -13,3 +12,4 @@ coverage/
 test-vault/
 
 TODO.md
+.agent-harness/agent-provider.json

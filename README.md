@@ -3,10 +3,13 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lynchjames/obsidian-mind-map/Release%20Build?logo=github&style=for-the-badge) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/lynchjames/obsidian-mind-map?style=for-the-badge&sort=semver)
 
 
-This repository contains a plugin for [Obsidian](https://obsidian.md/) for viewing Markdown notes as Mind Maps using [Markmap](https://markmap.js.org/). 
+This repository contains a plugin for [Obsidian](https://obsidian.md/) for viewing Markdown notes as Mind Maps using [Markmap](https://markmap.js.org/).
 
 A similar plugin is available for [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=gera2ld.markmap-vscode).
-    
+
+> [!IMPORTANT]
+> This repository now has a community-maintained successor: [Mindmap NextGen](https://github.com/james-tindal/obsidian-mindmap-nextgen). New users should evaluate that project first. This repository is retained as an independent compatibility-recovery fork and is not affiliated with the successor project.
+
 ## Features
 
 - Preview your current note as a Mind Map
@@ -37,26 +40,40 @@ Places a copy of the Mind Map SVG on your clipboard allowing you to paste it int
 
 ## Compatibility
 
-Custom plugins are only available for Obsidian v0.9.7+.
-
-The current API of this repo targets Obsidian **v0.9.20**. 
-
-## Installing
-
-As of version [0.9.7 of Obsidian](https://forum.obsidian.md/t/obsidian-release-v0-9-7-insider-build/7628), this plugin is available to be installed directly from within the app. The plugin can be found in the Community Plugins directory which can be accessed from the Settings pane under Third Party Plugins.
+This maintained fork requires Obsidian 1.8.9 or newer. Version 2.0.0 has been verified in Obsidian Desktop 1.12.7. The abandoned upstream Community Plugins release is still version 1.1.0 and does not contain these fixes.
 
 ## Manual installation
 
-1. Download the [latest release](https://github.com/lynchjames/obsidian-mind-map/releases/latest)
-1. Extract the obsidian-day-planner folder from the zip to your vault's plugins folder: `<vault>/.obsidian/plugins/`  
-Note: On some machines the `.obsidian` folder may be hidden. On MacOS you should be able to press `Command+Shift+Dot` to show the folder in Finder.
-1. Reload Obsidian
-1. If prompted about Safe Mode, you can disable safe mode and enable the plugin.
+This fork has not been published to Obsidian's official Community Plugins catalog. Installing the upstream catalog entry will install the old 1.1.0 build.
+
+1. Run `npm install` and `npm run release:local` in this repository.
+2. Copy the contents of `dist/obsidian-mind-map-2.0.0/` into `<vault>/.obsidian/plugins/obsidian-mind-map/`.
+3. Confirm that the plugin folder directly contains `manifest.json` and `main.js` (not another nested release folder).
+4. Reload Obsidian, open **Settings → Community plugins**, and enable **Mind Map**. Review Obsidian's trust prompt before enabling a manually installed plugin.
+
+On macOS, press `Command+Shift+Dot` in Finder if `.obsidian` is hidden. Back up an existing `obsidian-mind-map` plugin folder before replacing it.
 
 ## For developers
 Pull requests are both welcome and appreciated. 😀
 
 If you would like to contribute to the development of this plugin, please follow the guidelines provided in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+From a fresh checkout, run the project recovery entry point:
+
+```bash
+./init.sh
+```
+
+It verifies the repository Harness, installs or verifies npm dependencies, type-checks the TypeScript source, runs the project tests, and produces `main.js`. The individual development commands are:
+
+```bash
+npm run dev       # rebuild on source changes
+npm run typecheck # TypeScript validation
+npm test          # project-owned Node tests
+npm run build     # production main.js bundle
+npm run verify    # typecheck, test, and build
+npm run release:local # verified versioned directory in dist/
+```
 
 ## Donating
 

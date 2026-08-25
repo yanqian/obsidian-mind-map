@@ -1,0 +1,87 @@
+{
+  "features": [
+    {
+      "id": "F044",
+      "title": "Establish reproducible plugin recovery and build",
+      "description": "Modernize the project toolchain and root recovery entry point so a fresh agent or maintainer can install dependencies, type-check, build the plugin, and exercise a real Markdown transformation without manual reconstruction.",
+      "acceptance": [
+        "Root ./init.sh verifies the Harness, installs or verifies declared Node dependencies idempotently, and emits clear phase logs with non-zero failure exits.",
+        "A supported production build emits main.js and any other declared runtime artifacts without TypeScript or bundler errors.",
+        "Project-owned automated tests cover a representative Markdown-to-Markmap core transformation including front matter and internal links.",
+        "The dependency and build configuration no longer relies on the obsolete 2020 Obsidian API tarball/master toolchain contract.",
+        "README development instructions match the commands actually executed by ./init.sh and CI-friendly verification."
+      ],
+      "passes": true,
+      "status": "done",
+      "attempts": 1,
+      "last_error": "",
+      "priority": "P0"
+    },
+    {
+      "id": "F045",
+      "title": "Restore current-note mind-map preview",
+      "description": "Replace obsolete view activation and source-note lookup with current Obsidian APIs so invoking the command on a Markdown note opens a populated Markmap preview while retaining the original theme-aware presentation and settings.",
+      "acceptance": [
+        "The preview command is available only when a Markdown file can be selected as its source.",
+        "Invoking the command uses registered view state rather than directly constructing and opening a custom ItemView through the legacy path.",
+        "A non-empty Markdown note renders an SVG mind map rather than a blank or No content found pane on current desktop Obsidian.",
+        "Front matter is excluded without removing the first body character, and an actually empty note shows a clear empty state.",
+        "Split direction and existing node height, spacing, padding, line-height, and theme-derived text styling remain effective."
+      ],
+      "passes": true,
+      "status": "done",
+      "attempts": 1,
+      "last_error": "",
+      "priority": "P0"
+    },
+    {
+      "id": "F046",
+      "title": "Restore live following, pinning, and layout state",
+      "description": "Use Obsidian workspace and vault events plus serializable view state so unpinned previews follow Markdown navigation and edits, pinned previews remain stable, and saved layouts reopen against the correct source file.",
+      "acceptance": [
+        "An unpinned preview updates when the active Markdown file changes and when its source file is modified, without one-second polling.",
+        "Pin and unpin actions visibly reflect state and prevent or resume source-note following as expected.",
+        "The source file path and pin state are serialized and restored through the custom view state contract.",
+        "Closing or unloading the view removes registered events and view-owned rendering resources without affecting other panes."
+      ],
+      "passes": true,
+      "status": "done",
+      "attempts": 1,
+      "last_error": "",
+      "priority": "P1"
+    },
+    {
+      "id": "F047",
+      "title": "Harden links and screenshot export",
+      "description": "Preserve internal-link navigation and screenshot copying on current Obsidian while scoping DOM operations to the active view and reporting capability or conversion failures to the user.",
+      "acceptance": [
+        "Wiki links and local Markdown links in rendered nodes resolve to safe Obsidian navigation targets while external HTTP(S) links remain external.",
+        "Multiple links in one node and repeated transformations do not leak regular-expression state or corrupt link text.",
+        "Copy screenshot serializes the current view-owned SVG and writes a PNG when ClipboardItem/image clipboard support is available.",
+        "Missing SVG, unsupported clipboard APIs, image decode failure, and clipboard rejection produce a user-visible notice without an unhandled promise rejection."
+      ],
+      "passes": true,
+      "status": "done",
+      "attempts": 1,
+      "last_error": "",
+      "priority": "P1"
+    },
+    {
+      "id": "F048",
+      "title": "Package and verify a locally installable release",
+      "description": "Create a deterministic release bundle and capture real current-Obsidian evidence that the maintained fork can be installed, enabled, and used from a test vault.",
+      "acceptance": [
+        "A documented release command produces a versioned archive or directory containing manifest.json, main.js, and every required runtime style asset.",
+        "Manifest metadata declares a current minimum Obsidian version and remains internally consistent with the package/release version.",
+        "Installation instructions distinguish local/manual or fork installation from unperformed official Community Plugins publication.",
+        "A test-vault run reloads the plugin with no developer errors and DOM inspection confirms a rendered mind-map SVG for a fixture note.",
+        "Durable run evidence records the Obsidian version, installation path/fixture, error-console result, DOM result, and visual screenshot location."
+      ],
+      "passes": true,
+      "status": "done",
+      "attempts": 1,
+      "last_error": "",
+      "priority": "P2"
+    }
+  ]
+}

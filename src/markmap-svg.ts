@@ -1,12 +1,12 @@
 export function createSVG(containerEl: HTMLElement, lineHeight: string): SVGElement {
-    removeExistingSVG();
+    removeExistingSVG(containerEl);
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as unknown as SVGElement;
-    svg.id = 'markmap';
+    svg.classList.add('mindmap-svg');
     svg.setAttr('style', 'height: 100%; width: 100%;');
-    const container = containerEl.children[1];
+    const container = containerEl;
     const style = document.createElement('style');
     const { color } = getComputedCss(containerEl);
-    style.innerHTML = `#markmap div {
+    style.innerHTML = `.mindmap-svg div {
         color: ${color};
         line-height: ${lineHeight ?? '1em'};
     }`;
@@ -15,10 +15,10 @@ export function createSVG(containerEl: HTMLElement, lineHeight: string): SVGElem
     return svg;
 }
 
-export function removeExistingSVG() {
-    const existing = document.getElementById('markmap');
+export function removeExistingSVG(containerEl: HTMLElement) {
+    const existing = containerEl.querySelector('.mindmap-svg');
     if(existing) {
-        existing.parentElement.removeChild(existing);
+        existing.remove();
     }
 }
 

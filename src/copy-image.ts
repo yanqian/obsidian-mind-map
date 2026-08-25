@@ -1,48 +1,56 @@
 import { Notice } from 'obsidian';
 
-export function copyImageToClipboard(svg: SVGElement) {
-    const canvas = createCanvas(svg); 
-    const img = generateImage(svg, canvas, () => { 
-        canvas.toBlob((blob: any) => { 
-            const item = new ClipboardItem({ "image/png": blob });
-            navigator.clipboard.write([item]); 
-            new Notice('Screenshot copied to the clipboard.')
-        });
-    });
+export async function copyImageToClipboard(svg?: SVGElement): Promise<boolean> {
+  if (!svg) {
+    new Notice('Unable to copy screenshot: no mind map is rendered.');
+    return false;
+  }
+
+  try {
+    if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) {
+      throw new Error('image clipboard support is unavailable');
+    }
+
+    const canvas = createCanvas(svg);
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('canvas rendering is unavailable');
+
+    const image = await loadSvgImage(svg);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const blob = await canvasToPng(canvas);
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    new Notice('Screenshot copied to the clipboard.');
+    return true;
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    new Notice(`Unable to copy screenshot: ${reason}.`);
+    return false;
+  }
 }
 
 function createCanvas(svg: SVGElement): HTMLCanvasElement {
-    const canvas = document.createElement("canvas");
-    canvas.width = svg.clientWidth;
-    canvas.height = svg.clientHeight;
-    return canvas;
+  const canvas = document.createElement('canvas');
+  const viewBox = (svg as SVGSVGElement).viewBox?.baseVal;
+  canvas.width = Math.max(1, Math.round(svg.clientWidth || viewBox?.width || 1));
+  canvas.height = Math.max(1, Math.round(svg.clientHeight || viewBox?.height || 1));
+  return canvas;
 }
 
-function generateImage(svg: SVGElement, canvas: HTMLCanvasElement, callback: () => void): HTMLImageElement {
-    var ctx = canvas.getContext("2d");
-    return drawInlineSVG(ctx, svg, callback);
-}
-
-function drawInlineSVG(ctx: CanvasRenderingContext2D, svg: SVGElement, callback: () => void): HTMLImageElement {
-
-    // get svg data
+function loadSvgImage(svg: SVGElement): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
     const xml = new XMLSerializer().serializeToString(svg);
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('SVG image decoding failed'));
+    image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`;
+  });
+}
 
-    // make it base64
-    const svg64 = btoa(unescape(encodeURIComponent(xml)))
-
-    const b64Start = 'data:image/svg+xml;base64,';
-
-    // prepend a "header"
-    const image64 = b64Start + svg64;
-
-    const img = new Image();
-    // set it as the source of the img element
-    img.onload = function() {
-        // draw the image onto the canvas
-        ctx.drawImage(img, 0, 0);
-        callback();
-    }
-    img.src = image64;
-    return img;
+function canvasToPng(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('PNG conversion failed'));
+    }, 'image/png');
+  });
 }
