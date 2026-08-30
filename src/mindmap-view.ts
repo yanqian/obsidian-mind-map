@@ -204,17 +204,22 @@ export default class MindmapView extends ItemView {
       return;
     }
 
-    this.currentMd = await this.app.vault.cachedRead(file);
-    if (this.currentMd.trim().length === 0) {
-      this.displayEmpty('No content found');
-      return;
-    }
+    try {
+      this.currentMd = await this.app.vault.cachedRead(file);
+      if (this.currentMd.trim().length === 0) {
+        this.displayEmpty('No content found');
+        return;
+      }
 
-    const { root } = transformMindMapMarkdown(this.currentMd);
-    this.obsMarkmap?.updateInternalLinks(root);
-    this.hideEmptyState();
-    this.svg = createSVG(this.contentEl, this.settings.lineHeight);
-    this.renderMarkmap(root, this.svg);
+      const { root } = transformMindMapMarkdown(this.currentMd);
+      this.obsMarkmap?.updateInternalLinks(root);
+      this.hideEmptyState();
+      this.svg = createSVG(this.contentEl, this.settings.lineHeight);
+      this.renderMarkmap(root, this.svg);
+    } catch (error) {
+      console.error('Mind Map: unable to render note', error);
+      this.displayEmpty('Unable to render this note as a mind map');
+    }
   }
 
   private renderMarkmap(root: INode, svg: SVGElement): void {

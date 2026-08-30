@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import { build } from 'esbuild';
 import { INode } from 'markmap-common';
 import {
   rewriteInternalLinks,
@@ -39,6 +41,44 @@ test('transforms representative headings, lists, and an internal wiki link', () 
   assert.match(values(root).join('\n'), /obsidian:\/\/open\?vault=Test%20Vault&file=Roadmap/);
 });
 
+test('renders fenced code without invoking the incompatible Prism language loader', () => {
+  const markdown = [
+    '# Code',
+    '```',
+    '#!/bin/bash',
+    'echo ok',
+    '```',
+    '```bash',
+    'echo highlighted safely',
+    '```',
+  ].join('\n');
+
+  const result = transformMindMapMarkdown(markdown);
+  const renderedValues = values(result.root).join('\n');
+  assert.match(renderedValues, /#!\/bin\/bash/);
+  assert.match(renderedValues, /echo ok/);
+  assert.match(renderedValues, /echo highlighted safely/);
+  assert.equal(result.features.prism, undefined);
+});
+
+test('production-style browser bundle transforms fenced code without throwing', async () => {
+  const bundled = await build({
+    entryPoints: [fileURLToPath(new URL('../src/markdown-transform.ts', import.meta.url))],
+    bundle: true,
+    format: 'cjs',
+    platform: 'browser',
+    target: 'es2018',
+    write: false,
+  });
+  const module = { exports: {} as Record<string, unknown> };
+  const execute = new Function('module', 'exports', bundled.outputFiles[0].text);
+  execute(module, module.exports);
+  const bundledTransform = module.exports.transformMindMapMarkdown as typeof transformMindMapMarkdown;
+  const markdown = ['# Code', '```', 'echo ok', '```', '```bash', 'echo bash', '```'].join('\n');
+
+  assert.doesNotThrow(() => bundledTransform(markdown));
+});
+
 test('rewrites multiple local links repeatedly without changing external links', () => {
   const node = {
     v: '[[Folder/One|First]] <a href="Second%20Note.md">Second</a> <a href="https://example.com/x">Web</a>',
@@ -74,6 +114,8 @@ test('uses event-driven following and serializable view state', () => {
   assert.match(source, /for \(const cleanup of this\.eventCleanups\)/);
   assert.doesNotMatch(source, /setInterval\(/);
   assert.doesNotMatch(source, /registerInterval\(/);
+  assert.match(source, /Unable to render this note as a mind map/);
+  assert.match(source, /catch \(error\)/);
 });
 
 test('screenshot export handles capability and conversion failures', () => {

@@ -1,10 +1,15 @@
 import { INode } from 'markmap-common';
-import { transform } from 'markmap-lib';
+import { builtInPlugins, setPlugins, transform } from 'markmap-lib';
 import { FRONT_MATTER_REGEX } from './constants';
 
 const WIKI_LINK_REGEX = /\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g;
 const HTML_LINK_REGEX = /<a\s+[^>]*?href=(["'])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi;
 const URI_SCHEME_REGEX = /^[a-z][a-z\d+.-]*:/i;
+
+// markmap-lib 0.10 imports `prismjs/components/`, which esbuild resolves to
+// Prism's metadata object instead of its Node-only dynamic language loader.
+// Keep the stable KaTeX transform and render code fences without highlighting.
+setPlugins(builtInPlugins.filter((plugin) => plugin.name !== 'prism'));
 
 export function stripFrontMatter(markdown: string): string {
   return markdown.replace(FRONT_MATTER_REGEX, '');

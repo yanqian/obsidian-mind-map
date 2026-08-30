@@ -30,9 +30,29 @@
       ],
       "passes": true,
       "status": "done",
-      "attempts": 1,
+      "attempts": 2,
       "last_error": "",
-      "priority": "P0"
+      "priority": "P0",
+      "human_acceptance": {
+        "status": "accepted",
+        "history": [
+          {
+            "at": "2026-08-25T15:30:14.157651+00:00",
+            "result": "fail",
+            "classification": "current_feature",
+            "feedback": "A non-empty Markdown note containing an unlabeled fenced code block throws a bundled markmap-lib Prism loader TypeError and leaves the preview showing the misleading No Markdown note selected state."
+          },
+          {
+            "at": "2026-08-25T15:49:40.956741+00:00",
+            "result": "pass",
+            "classification": "current_feature",
+            "feedback": "Verified in the work vault on Obsidian 1.13.7: DDIS Note - Chapter 3 renders a populated mind map with its fenced Bash block, and the former bundled Prism TypeError is absent from the Developer Console."
+          }
+        ],
+        "last_feedback": "Verified in the work vault on Obsidian 1.13.7: DDIS Note - Chapter 3 renders a populated mind map with its fenced Bash block, and the former bundled Prism TypeError is absent from the Developer Console.",
+        "last_recorded_at": "2026-08-25T15:49:40.956741+00:00",
+        "reopen_pending": false
+      }
     },
     {
       "id": "F046",

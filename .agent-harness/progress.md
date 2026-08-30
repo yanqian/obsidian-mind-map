@@ -2,20 +2,25 @@
 
 ## Current System Status
 
-Harness 0.3.9 is installed in hidden layout. F044-F048 are complete with independent Evaluator evidence. The maintained 2.0.0 fork builds reproducibly, works in isolated Obsidian Desktop 1.12.7, and produces a verified local release directory.
+Harness 0.3.9 is installed in hidden layout. F044-F048 are complete. The reopened F045 fenced-code defect is fixed, independently evaluated, and accepted through Human Eval. The maintained 2.0.0 fork builds reproducibly and produces a verified local release directory.
 
 ## Last Completed Feature
 
-F048 — Package and verify a locally installable release.
+F045 — Restore current-note mind-map preview, including fenced-code notes, on current Obsidian.
 
 ## Next Feature
 
-None in the current minspec. Human review and an explicitly authorized finalize-and-commit workflow may follow.
+No feature is currently pending.
 
 ## Known Issues
 
 - F044 replaced the upstream 2020 build stack and passes root recovery, type checking, project tests, production bundling, and independent evaluation.
 - F045 passed independent evaluation on its first attempt; durable evidence is in `.agent-harness/runs/20260825T085311Z-F045-eval.md`.
+- Human Eval later reopened F045 because `markmap-lib` resolves Prism's dynamic language loader incorrectly in the production browser bundle, leaving a stale `No Markdown note selected` state for a valid note with an unlabeled fenced code block. The fix disables that obsolete Prism transform while retaining fenced-code content and KaTeX, and adds an honest caught render-error state.
+- Regression coverage now exercises both source transforms and an esbuild-produced browser bundle with unlabeled and `bash` fenced blocks. `npm run release:local` passed type checking, 10 tests, production bundling, and packaging.
+- The repaired 2.0.0 package was checksum-matched into the work vault. Obsidian 1.13.7 rendered `01-Note/DDIS Note - Chapter 3.md` as a populated mind map including its fenced Bash block; the console contained seven informational messages and no errors. Screenshot evidence is `.agent-harness/runs/F045-fenced-code-fixed-obsidian-1.13.7.jpeg`.
+- A repeated `work-fast` entry reused F045's pre-reopen coding evidence and skipped directly to evaluation. Interactive manual fallback is recorded in `.agent-harness/runs/20260825T153745Z-F045-manual-fallback.md`; fresh coding evidence was subsequently reviewed by a separate cold-start Evaluator and passed in `.agent-harness/runs/20260825T154908Z-F045-eval.md`.
+- F045 Human Eval is accepted after real-app verification; durable acceptance evidence is in `.agent-harness/runs/20260825T154940Z-F045-human-eval.md`.
 - F046 replaces one-second polling with `file-open` and vault `modify` events, scopes SVG cleanup to one view, and persists `{file, pinned}` in view state.
 - Real-app F046 verification covered unpinned following, edit refresh, pin protection, unpin resume, and a pinned layout restart; screenshot evidence is in `.agent-harness/runs/F046-pinned-layout-restore.png`.
 - F046 passed independent evaluation on its first attempt; durable evidence is in `.agent-harness/runs/20260825T090507Z-F046-eval.md`.
